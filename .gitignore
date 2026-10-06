@@ -1,0 +1,15 @@
+# Environment / IDE
+.vscode/
+.idea/
+*.log
+
+# OS Generated
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Temporary uploads (keep directory structure)
+uploads/*
+!uploads/.gitkeep
