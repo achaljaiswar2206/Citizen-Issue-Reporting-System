@@ -702,3 +702,37 @@ a:hover {
     margin-bottom: 0;
   }
 }
+
+/* Smooth Dropdown Slide-down Animation */
+.dropdown-menu {
+  border: 1px solid var(--cirs-border) !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.08) !important;
+  border-radius: 12px !important;
+  animation: cirsDropdownSlide 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top right;
+}
+
+@keyframes cirsDropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-item {
+  transition: all 0.15s ease-in-out;
+  border-radius: 8px;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f5f9;
+}
+
+.dropdown-item.text-danger:hover {
+  background-color: #fef2f2 !important;
+  color: #dc2626 !important;
+}

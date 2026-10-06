@@ -1,27 +1,30 @@
 @echo off
-title Citizen Issue Reporting System (CIRS) - Port 8000
-echo ===================================================
-echo   Citizen Issue Reporting System (CIRS)
-echo   Starting Web Application on Port 8000...
-echo ===================================================
+title CIRS Civic Portal - Port 8000
+cls
+echo =========================================================
+echo    Citizen Issue Reporting System (CIRS) Launcher
+echo =========================================================
 echo.
 
-:: Check if MySQL port 3306 is reachable
-netstat -ano | findstr ":3306" >nul 2>&1
+:: 1. Check if MySQL (Port 3306) is running in XAMPP
+netstat -ano | findstr "LISTENING" | findstr ":3306" >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [WARNING] MySQL (port 3306) does not seem to be running!
-    echo Please make sure MySQL is started in XAMPP Control Panel.
+    echo [!] WARNING: MySQL is NOT running on port 3306.
+    echo     Please click "Start" on MySQL in the XAMPP Control Panel.
     echo.
+) else (
+    echo [OK] MySQL Database is connected on port 3306.
 )
 
-echo Starting PHP Server at http://localhost:8000 ...
-echo Press Ctrl+C at any time to stop the server.
+echo.
+echo Starting Web Application on http://localhost:8000 ...
+echo NOTE: Do NOT close this black window while using the website.
 echo.
 
-:: Open default browser to CIRS portal
+:: 2. Automatically open the browser
 start "" "http://localhost:8000"
 
-:: Start PHP built-in server
+:: 3. Launch PHP built-in server on Port 8000
 if exist "C:\xampp\php\php.exe" (
     "C:\xampp\php\php.exe" -S 127.0.0.1:8000
 ) else (

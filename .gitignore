@@ -1,3 +1,8 @@
+# Environment secrets & credentials (NEVER commit to GitHub)
+.env
+.env.local
+.env.*.local
+
 # Environment / IDE
 .vscode/
 .idea/

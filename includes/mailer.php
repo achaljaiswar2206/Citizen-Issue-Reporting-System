@@ -628,3 +628,60 @@ function sendComplaintResolvedEmail($to_email, $to_name, $complaint, $dept_name,
 
     return sendCustomEmail($to_email, $to_name, $subject, $html);
 }
+
+/**
+ * Send Helpdesk Inquiry Reply Email to Citizen
+ */
+function sendInquiryReplyEmail($to_email, $to_name, $original_subject, $original_message, $reply_message, $admin_name = 'Municipal Commissioner') {
+    $subject = "Re: [CIRS Helpdesk] " . $original_subject;
+
+    $html = '<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f1f5f9; margin: 0; padding: 20px; }
+            .mail-box { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+            .mail-header { background: linear-gradient(135deg, #1d4ed8, #0f172a); color: #ffffff; padding: 26px; text-align: center; }
+            .mail-body { padding: 30px; color: #334155; line-height: 1.6; }
+            .reply-box { background: #eff6ff; border-left: 4px solid #1d4ed8; padding: 18px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 15px; color: #1e3a8a; line-height: 1.65; }
+            .original-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; margin: 20px 0; font-size: 13px; color: #64748b; }
+            .mail-footer { background: #0f172a; color: #94a3b8; padding: 18px; text-align: center; font-size: 12px; }
+        </style>
+    </head>
+    <body>
+        <div class="mail-box">
+            <div class="mail-header">
+                <h2 style="margin:0; font-size: 22px;">Citizen Helpdesk & Inquiry Response</h2>
+                <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 13px;">Citizen Issue Reporting System (CIRS) &bull; Municipal Support</p>
+            </div>
+            <div class="mail-body">
+                <h3 style="margin-top:0; color: #0f172a;">Hello, ' . htmlspecialchars($to_name) . '</h3>
+                <p>Thank you for contacting the CIRS Civic Helpdesk regarding: <strong>' . htmlspecialchars($original_subject) . '</strong>.</p>
+                
+                <p>Below is the official response from the Municipal Administration Desk:</p>
+
+                <div class="reply-box">
+                    <strong>Official Municipal Response:</strong><br><br>
+                    ' . nl2br(htmlspecialchars($reply_message)) . '
+                    <br><br>
+                    <small style="color: #475569;">— <strong>' . htmlspecialchars($admin_name) . '</strong>, Municipal Administration Control Room</small>
+                </div>
+
+                <div class="original-box">
+                    <strong style="color: #475569; display:block; margin-bottom: 5px;">Your Original Inquiry:</strong>
+                    <em>' . nl2br(htmlspecialchars($original_message)) . '</em>
+                </div>
+
+                <p style="font-size: 13px; color: #64748b;">If you have further questions or require additional municipal assistance, you can reply directly to this email or visit our civic portal.</p>
+            </div>
+            <div class="mail-footer">
+                &copy; ' . date('Y') . ' Citizen Issue Reporting System. Dedicated to transparent civic service.
+            </div>
+        </div>
+    </body>
+    </html>';
+
+    return sendCustomEmail($to_email, $to_name, $subject, $html);
+}
+

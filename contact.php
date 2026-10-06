@@ -11,9 +11,30 @@ $page_title = "Contact Civic Helpline & Support";
 $sent = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (validate_csrf()) {
-        $sent = true;
-        setFlash('success', "Thank you for reaching out! Your query has been received by our civic helpline team.");
+    if (!validate_csrf()) {
+        setFlash('danger', 'Security validation token expired. Please try again.');
+    } else {
+        $name = trim($_POST['name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $subject = trim($_POST['subject'] ?? '');
+        $message = trim($_POST['message'] ?? '');
+
+        if (empty($name) || empty($email) || empty($subject) || empty($message)) {
+            setFlash('danger', 'Please fill in all inquiry fields.');
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            setFlash('danger', 'Please provide a valid email address.');
+        } else {
+            try {
+                $stmt = $pdo->prepare("INSERT INTO contact_inquiries (name, email, subject, message, status) VALUES (?, ?, ?, ?, 'NEW')");
+                $stmt->execute([$name, $email, $subject, $message]);
+                $inquiry_id = $pdo->lastInsertId();
+
+                $sent = true;
+                setFlash('success', "Thank you, {$name}! Your inquiry (#INQ-{$inquiry_id}) has been recorded. Our municipal support desk will review and follow up with you shortly.");
+            } catch (Exception $e) {
+                setFlash('danger', 'Error submitting inquiry: ' . $e->getMessage());
+            }
+        }
     }
 }
 

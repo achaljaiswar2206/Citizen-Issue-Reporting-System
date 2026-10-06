@@ -94,7 +94,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <label class="form-label small fw-semibold text-secondary">Administrator Email</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="bi bi-envelope-at"></i></span>
-                                <input type="email" name="email" class="form-control" placeholder="admin@cirs.gov" required autofocus value="<?= isset($_POST['email']) ? sanitize($_POST['email']) : '' ?>">
+                                <input type="email" name="email" class="form-control" placeholder="Enter administrator email" required autofocus value="<?= isset($_POST['email']) ? sanitize($_POST['email']) : '' ?>">
                             </div>
                         </div>
 

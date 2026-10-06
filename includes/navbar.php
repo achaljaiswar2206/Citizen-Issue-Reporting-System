@@ -13,15 +13,17 @@ $is_citizen = isset($_SESSION['user_id']);
 ?>
 
 <nav class="navbar navbar-expand-lg cirs-navbar sticky-top">
-    <div class="<?= $is_admin ? 'container-fluid px-lg-4' : 'container' ?>">
+    <div class="<?= ($is_admin || $is_citizen) ? 'container-fluid px-lg-4' : 'container' ?>">
         <!-- Brand Logo -->
-        <a class="navbar-brand" href="<?= $is_admin ? BASE_URL . '/admin/dashboard.php' : BASE_URL . '/index.php' ?>">
+        <a class="navbar-brand" href="<?= $is_admin ? BASE_URL . '/admin/dashboard.php' : ($is_citizen ? BASE_URL . '/citizen/dashboard.php' : BASE_URL . '/index.php') ?>">
             <div class="cirs-logo-badge">
                 <i class="bi bi-buildings"></i>
             </div>
             <span><?= APP_SHORT_NAME ?></span>
             <?php if ($is_admin): ?>
                 <span class="badge bg-dark text-warning border border-warning-subtle rounded-pill fs-7 d-none d-sm-inline ms-1"><i class="bi bi-shield-lock-fill me-1"></i>Admin Control</span>
+            <?php elseif ($is_citizen): ?>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill fs-7 d-none d-sm-inline ms-1">Citizen Portal</span>
             <?php else: ?>
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill fs-7 d-none d-sm-inline ms-1">Civic Portal</span>
             <?php endif; ?>
@@ -57,6 +59,11 @@ $is_citizen = isset($_SESSION['user_id']);
                             <i class="bi bi-people-fill me-1 text-primary"></i> Citizens List
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($current_page == 'inquiries.php') ? 'active' : '' ?>" href="<?= BASE_URL ?>/admin/inquiries.php">
+                            <i class="bi bi-chat-left-text-fill me-1 text-primary"></i> Inquiries
+                        </a>
+                    </li>
                 </ul>
 
                 <!-- Admin Profile Badge & Logout on Right -->
@@ -73,8 +80,55 @@ $is_citizen = isset($_SESSION['user_id']);
                     </a>
                 </div>
 
+            <?php elseif ($is_citizen): ?>
+                <!-- CITIZEN PORTAL NAVIGATION (Logged-in citizen links) -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($current_page == 'dashboard.php') ? 'active' : '' ?>" href="<?= BASE_URL ?>/citizen/dashboard.php">
+                            <i class="bi bi-speedometer2 me-1 text-primary"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= in_array($current_page, ['complaints.php', 'complaint_details.php']) ? 'active' : '' ?>" href="<?= BASE_URL ?>/citizen/complaints.php">
+                            <i class="bi bi-card-list me-1 text-primary"></i> My Complaints
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($current_page == 'file_complaint.php') ? 'active' : '' ?>" href="<?= BASE_URL ?>/citizen/file_complaint.php">
+                            <i class="bi bi-plus-circle me-1 text-success"></i> File New Issue
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($current_page == 'profile.php') ? 'active' : '' ?>" href="<?= BASE_URL ?>/citizen/profile.php">
+                            <i class="bi bi-person-gear me-1 text-secondary"></i> My Profile
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Citizen Profile Dropdown (Click to slide down and show Log Out) -->
+                <div class="dropdown mt-3 mt-lg-0">
+                    <button class="btn btn-primary dropdown-toggle d-flex align-items-center gap-2 shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle fs-6"></i>
+                        <span><?= sanitize($_SESSION['user_name'] ?? 'Citizen Account') ?></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-2" style="min-width: 200px;">
+                        <li class="px-3 py-2 border-bottom mb-1 bg-light rounded-2">
+                            <small class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.7rem;">Signed in as</small>
+                            <strong class="d-block text-dark text-truncate"><?= sanitize($_SESSION['user_name'] ?? 'Citizen') ?></strong>
+                            <small class="text-success d-flex align-items-center gap-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-patch-check-fill"></i> Verified Resident
+                            </small>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-danger rounded-2 d-flex align-items-center gap-2 py-2 fw-semibold" href="<?= BASE_URL ?>/logout.php">
+                                <i class="bi bi-box-arrow-right text-danger"></i> Log Out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
             <?php else: ?>
-                <!-- PUBLIC / CITIZEN NAVIGATION -->
+                <!-- PUBLIC GUEST NAVIGATION (Not logged in) -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
                     <li class="nav-item">
                         <a class="nav-link <?= ($current_page == 'index.php') ? 'active' : '' ?>" href="<?= BASE_URL ?>/index.php">
@@ -108,37 +162,17 @@ $is_citizen = isset($_SESSION['user_id']);
                     </li>
                 </ul>
 
-                <!-- Auth Buttons / User Profile Navigation -->
+                <!-- Auth Buttons for Public Guests -->
                 <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
-                    <?php if ($is_citizen): ?>
-                        <!-- Citizen Logged In Menu -->
-                        <div class="dropdown">
-                            <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle fs-5"></i>
-                                <span class="d-none d-md-inline"><?= sanitize($_SESSION['user_name'] ?? 'Citizen Account') ?></span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                                <li><h6 class="dropdown-header text-uppercase fs-7 text-muted">Citizen Portal</h6></li>
-                                <li><a class="dropdown-item" href="<?= BASE_URL ?>/citizen/dashboard.php"><i class="bi bi-speedometer2 me-2 text-primary"></i> Dashboard</a></li>
-                                <li><a class="dropdown-item" href="<?= BASE_URL ?>/citizen/complaints.php"><i class="bi bi-card-list me-2 text-primary"></i> My Complaints</a></li>
-                                <li><a class="dropdown-item" href="<?= BASE_URL ?>/citizen/file_complaint.php"><i class="bi bi-plus-circle me-2 text-success"></i> File New Issue</a></li>
-                                <li><a class="dropdown-item" href="<?= BASE_URL ?>/citizen/profile.php"><i class="bi bi-person-gear me-2 text-secondary"></i> My Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="<?= BASE_URL ?>/logout.php"><i class="bi bi-box-arrow-right me-2"></i> Log Out</a></li>
-                            </ul>
-                        </div>
-                    <?php else: ?>
-                        <!-- Public Guest Actions -->
-                        <a href="<?= BASE_URL ?>/login.php" class="btn btn-outline-primary">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Login
-                        </a>
-                        <a href="<?= BASE_URL ?>/register.php" class="btn btn-primary shadow-sm">
-                            <i class="bi bi-person-plus me-1"></i> Register
-                        </a>
-                        <button type="button" class="btn btn-sm btn-light border text-muted" data-bs-toggle="modal" data-bs-target="#adminRestrictedModal" title="Municipal Staff Access">
-                            <i class="bi bi-shield-lock"></i>
-                        </button>
-                    <?php endif; ?>
+                    <a href="<?= BASE_URL ?>/login.php" class="btn btn-outline-primary">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                    </a>
+                    <a href="<?= BASE_URL ?>/register.php" class="btn btn-primary shadow-sm">
+                        <i class="bi bi-person-plus me-1"></i> Register
+                    </a>
+                    <button type="button" class="btn btn-sm btn-light border text-muted" data-bs-toggle="modal" data-bs-target="#adminRestrictedModal" title="Municipal Staff Access">
+                        <i class="bi bi-shield-lock"></i>
+                    </button>
                 </div>
             <?php endif; ?>
         </div>

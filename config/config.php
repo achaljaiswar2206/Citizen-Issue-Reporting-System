@@ -12,6 +12,24 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Load .env environment variables if present
+$env_path = dirname(__DIR__) . '/.env';
+if (file_exists($env_path)) {
+    $env_lines = file($env_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($env_lines as $line) {
+        $line = trim($line);
+        if (empty($line) || strpos($line, '#') === 0) continue;
+        if (strpos($line, '=') !== false) {
+            list($key, $val) = explode('=', $line, 2);
+            $key = trim($key);
+            $val = trim($val, " \t\n\r\0\x0B\"'");
+            putenv("{$key}={$val}");
+            $_ENV[$key] = $val;
+            $_SERVER[$key] = $val;
+        }
+    }
+}
+
 // Application Constants
 define('APP_NAME', 'Citizen Issue Reporting System');
 define('APP_SHORT_NAME', 'CIRS');
